@@ -1,14 +1,14 @@
 import SwiftUI
 
-protocol AvatarGeneratorDelegate: AnyObject {
+public protocol AvatarGeneratorDelegate: AnyObject {
     func didGenerateAvatarImage(_ image: UIImage)
 }
 
-final class AvatarUIView: UIView {
-    weak var delegate: AvatarGeneratorDelegate?
+public final class AvatarUIView: UIView {
+    public weak var delegate: AvatarGeneratorDelegate?
     private var avatarImageView: UIImageView!
 
-    init() {
+    public init() {
         super.init(frame: .zero)
         setupUI()
     }
@@ -66,11 +66,11 @@ final class AvatarUIView: UIView {
     }
 }
 
-struct AvatarView<Shape: View>: View {
+public struct AvatarView<Shape: View>: View {
     var backgroundColor: Color
     var shape: Shape
 
-    var body: some View {
+    public var body: some View {
 //        ZStack {
 //            Circle()
 //                .fill(backgroundColor)
@@ -95,14 +95,27 @@ struct AvatarView<Shape: View>: View {
 }
 
 
-struct AvatarGeneratorView: UIViewRepresentable {
-    weak var delegate: AvatarGeneratorDelegate?
+public struct AvatarGeneratorView: UIViewRepresentable {
+    public weak var delegate: AvatarGeneratorDelegate?
 
-    @Binding var selectedBackgroundColor: UIColor
-    @Binding var selectedShape: String
-    @Binding var selectedEyeColor: UIColor
+    @Binding public var selectedBackgroundColor: UIColor
+    @Binding public var selectedShape: String
+    @Binding public var selectedEyeColor: UIColor
+    
+    // Make the initializer public
+    public init(
+        delegate: AvatarGeneratorDelegate?,
+        selectedBackgroundColor: Binding<UIColor>,
+        selectedShape: Binding<String>,
+        selectedEyeColor: Binding<UIColor>
+    ) {
+        self.delegate = delegate
+        self._selectedBackgroundColor = selectedBackgroundColor
+        self._selectedShape = selectedShape
+        self._selectedEyeColor = selectedEyeColor
+    }
 
-    func makeUIView(context: Context) -> AvatarUIView {
+    public func makeUIView(context: Context) -> AvatarUIView {
         let avatarView = AvatarUIView()
         avatarView.delegate = context.coordinator
         avatarView.updateAvatar(
@@ -113,7 +126,7 @@ struct AvatarGeneratorView: UIViewRepresentable {
         return avatarView
     }
 
-    func updateUIView(_ uiView: AvatarUIView, context: Context) {
+    public func updateUIView(_ uiView: AvatarUIView, context: Context) {
         uiView.updateAvatar(
             backgroundColor: selectedBackgroundColor,
             shape: selectedShape,
@@ -121,25 +134,28 @@ struct AvatarGeneratorView: UIViewRepresentable {
         )
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         return Coordinator(parent: self)
     }
 
-    class Coordinator: NSObject, AvatarGeneratorDelegate {
+    public class Coordinator: NSObject, AvatarGeneratorDelegate {
         var parent: AvatarGeneratorView
 
-        init(parent: AvatarGeneratorView) {
+        public init(parent: AvatarGeneratorView) {
             self.parent = parent
         }
 
-        func didGenerateAvatarImage(_ image: UIImage) {
+        public func didGenerateAvatarImage(_ image: UIImage) {
             parent.delegate?.didGenerateAvatarImage(image)
         }
     }
 }
 
-class AvatarGeneratorDelegateImpl: AvatarGeneratorDelegate, ObservableObject {
-    func didGenerateAvatarImage(_ image: UIImage) {
+public class AvatarGeneratorDelegateImpl: AvatarGeneratorDelegate, ObservableObject {
+    
+    public init() {}
+    
+    public func didGenerateAvatarImage(_ image: UIImage) {
         // Handle the generated avatar image in the calling app
         print("Generated Avatar Image")
     }
@@ -182,7 +198,7 @@ struct ContentView_Previews: PreviewProvider {
             )
             .frame(width: 200, height: 200)
             .padding(10)
-            .background(Color.gray)
+            .background(Color.white)
             .cornerRadius(10)
             .previewLayout(.fixed(width: 300, height: 300))
             .environment(\.colorScheme, .light)
@@ -195,7 +211,7 @@ struct ContentView_Previews: PreviewProvider {
             )
             .frame(width: 200, height: 200)
             .padding(10)
-            .background(Color.gray)
+            .background(Color.white)
             .cornerRadius(10)
             .previewLayout(.fixed(width: 300, height: 300))
             .environment(\.colorScheme, .dark)
