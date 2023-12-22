@@ -1,4 +1,22 @@
 import SwiftUI
+import UIKit
+
+// TODO: - Remove once the issue with Color+Extension file is resolved
+
+extension Color {
+    init?(colorString: String) {
+        switch colorString.lowercased() {
+        case "red": self = .red
+        case "green": self = .green
+        case "blue": self = .blue
+        case "purple": self = .purple
+        case "orange": self = .orange
+        case "black": self = .black
+        case "gray": self = .gray
+        default: return nil
+        }
+    }
+} // TODO ENDS
 
 public protocol AvatarGeneratorDelegate: AnyObject {
     func didGenerateAvatarImage(_ image: UIImage)
@@ -9,49 +27,49 @@ public final class AvatarUIView: UIView {
     private var avatarImageView: UIImageView!
 
     public init() {
-        super.init(frame: .zero)
+        super.init(frame: CGRect(x: 0, y: 0, width: 200, height: 200)) // Set the size accordingly
         setupUI()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setupUI()
     }
 
     private func setupUI() {
         avatarImageView = UIImageView()
-        avatarImageView.backgroundColor = .red // Set a background color for visibility
+        avatarImageView.backgroundColor = .gray // Set a background color for visibility
         addSubview(avatarImageView)
     }
 
-    private func generateAvatar(backgroundColor: UIColor, shape: String, eyeColor: UIColor) -> UIImage {
-        print("Generating Avatar with backgroundColor: \(backgroundColor), shape: \(shape), eyeColor: \(eyeColor)")
-
+    private func generateAvatar(backgroundColor: Color, shape: String, eyeColor: Color) -> UIImage {
         // Create a SwiftUI view representing the avatar
-        let avatarView = AvatarView(
-            backgroundColor: Color(backgroundColor),
-            shape: Image(systemName: shape).foregroundColor(Color(eyeColor))
-                .background(Color.red)
-        )
+        let avatarView = AvatarView(selectedBackgroundColor: .constant(backgroundColor), selectedShape: .constant(shape), selectedEyeColor: .constant(eyeColor))
 
-        // Use UIViewRepresentable to convert SwiftUI view to UIView
-        let uiView = UIHostingController(rootView: avatarView).view!
+        let controller = UIHostingController(rootView: avatarView)
+        let view = controller.view
+        let targetSize = controller.view.intrinsicContentSize
+        view?.bounds = CGRect(origin: .zero, size: targetSize)
+        view?.backgroundColor = .clear
 
-        // Render the UIView into an image
-        let renderer = UIGraphicsImageRenderer(bounds: uiView.bounds)
-        let avatarImage = renderer.image { rendererContext in
-            uiView.layer.render(in: rendererContext.cgContext)
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        let avatarImage =  renderer.image { _ in
+            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
         }
 
         delegate?.didGenerateAvatarImage(avatarImage)
 
         print("Avatar generated successfully")
+        print("AvatarUIView bounds: \(bounds)")
+        print("avatarImageView frame: \(avatarImageView.frame)")
 
+//        return UIImage(systemName: "circle.fill")!
         return avatarImage
     }
 
 
-    func updateAvatar(backgroundColor: UIColor, shape: String, eyeColor: UIColor) {
+    func updateAvatar(backgroundColor: Color, shape: String, eyeColor: Color) {
         print("Updating Avatar with backgroundColor: \(backgroundColor), shape: \(shape), eyeColor: \(eyeColor)")
 
         let avatarImage = generateAvatar(
@@ -62,52 +80,75 @@ public final class AvatarUIView: UIView {
 
         // Assign the generated image to the image view
         avatarImageView.image = avatarImage
+
+        // Adjust the content mode to center the image within the avatarImageView
+        avatarImageView.contentMode = .center
+
+        // Resize and center the avatarImageView within bounds with padding
         avatarImageView.frame = bounds
     }
 }
 
-public struct AvatarView<Shape: View>: View {
-    var backgroundColor: Color
-    var shape: Shape
+public struct AvatarView: View {
 
-    public var body: some View {
-//        ZStack {
-//            Circle()
-//                .fill(backgroundColor)
-//                .frame(width: 150, height: 150)
-//
-//            shape
-//                .font(.system(size: 25))
-//                .offset(x: -35, y: -15) // Offset for the left eye
-//
-//            shape
-//                .font(.system(size: 25))
-//                .offset(x: 35, y: -15) // Offset for the right eye
-//
-//            shape
-//                .font(.system(size: 25))
-//                .offset(x: 0, y: +30) // Offset for the mouth
-//        }
-        Text("Hello, World!")
-            .frame(width: 150, height: 150)
-            .background(backgroundColor)
+      
+    @Binding var selectedBackgroundColor: Color
+    @Binding var selectedShape: String
+    @Binding var selectedEyeColor: Color
+
+    public init(selectedBackgroundColor: Binding<Color>, selectedShape: Binding<String>, selectedEyeColor: Binding<Color>) {
+        self._selectedBackgroundColor = selectedBackgroundColor
+        self._selectedShape = selectedShape
+        self._selectedEyeColor = selectedEyeColor
     }
+
+      public var body: some View {
+          VStack {
+              generateAvatar()
+                  .frame(width: 150, height: 150)
+          }
+          .padding()
+      }
+
+      private func generateAvatar() -> some View {
+          return ZStack {
+              Circle()
+                  .fill(selectedBackgroundColor)
+                  .frame(width: 150, height: 150)
+
+              Image(systemName: selectedShape)
+                  .foregroundColor(selectedEyeColor)
+                  .font(.system(size: 25))
+                  .offset(x: -35, y: -15) // Offset for the left eye
+
+              Image(systemName: selectedShape)
+                  .foregroundColor(selectedEyeColor)
+                  .font(.system(size: 25))
+                  .offset(x: 35, y: -15) // Offset for the right eye
+              
+              Image(systemName: selectedShape)
+                  .foregroundColor(selectedEyeColor)
+                  .font(.system(size: 25))
+                  .offset(x: 0, y: +30) // Offset for the right eye
+          }
+          .padding()
+      }
 }
 
 
 public struct AvatarGeneratorView: UIViewRepresentable {
     public weak var delegate: AvatarGeneratorDelegate?
 
-    @Binding public var selectedBackgroundColor: UIColor
+    @Binding public var selectedBackgroundColor: Color
     @Binding public var selectedShape: String
-    @Binding public var selectedEyeColor: UIColor
+    @Binding public var selectedEyeColor: Color
     
     // Make the initializer public
     public init(
         delegate: AvatarGeneratorDelegate?,
-        selectedBackgroundColor: Binding<UIColor>,
+        selectedBackgroundColor: Binding<Color>,
         selectedShape: Binding<String>,
-        selectedEyeColor: Binding<UIColor>
+        selectedEyeColor: Binding<Color>
     ) {
         self.delegate = delegate
         self._selectedBackgroundColor = selectedBackgroundColor
@@ -163,19 +204,95 @@ public class AvatarGeneratorDelegateImpl: AvatarGeneratorDelegate, ObservableObj
 
 struct ContentView: View {
     @StateObject private var avatarDelegate = AvatarGeneratorDelegateImpl()
-    @State private var selectedBackgroundColor = UIColor.red
+    @State private var selectedBackgroundColor = Color.red
     @State private var selectedShape = "circle"
-    @State private var selectedEyeColor = UIColor.black
+    @State private var selectedEyeColor = Color.black
+    @State private var isFormShowing = false
 
     var body: some View {
-        NavigationView {
-            AvatarGeneratorView(
-                delegate: avatarDelegate,
-                selectedBackgroundColor: $selectedBackgroundColor,
-                selectedShape: $selectedShape,
-                selectedEyeColor: $selectedEyeColor
-            )
-            .navigationTitle("Avatar Generator")
+        VStack {
+            NavigationView {
+                AvatarGeneratorView(
+                    delegate: avatarDelegate,
+                    selectedBackgroundColor: $selectedBackgroundColor,
+                    selectedShape: $selectedShape,
+                    selectedEyeColor: $selectedEyeColor
+                )
+                .navigationTitle("Avatar Generator")
+            } //: NAVIGATIONVIEW
+            
+            Button("Show Selection From") {
+                isFormShowing.toggle()
+            }
+            .padding()
+            .sheet(isPresented: $isFormShowing, content: {
+                SelectionFormView(
+                    selectedBackgroundColor: $selectedBackgroundColor,
+                    selectedShape: $selectedShape,
+                    selectedEyeColor: $selectedEyeColor
+                )
+            })
+        }
+        .padding()
+    }
+}
+
+public struct SelectionFormView: View {
+    let backgroundColors = ["Red", "Green", "Blue", "Purple", "Orange"]
+    let shapes = ["circle", "triangle", "square"]
+    let eyeColors = ["Black", "Blue", "Green", "Gray"]
+    
+    @Binding public var selectedBackgroundColor: Color
+    @Binding public var selectedShape: String
+    @Binding public var selectedEyeColor: Color
+    
+    public init(
+        selectedBackgroundColor: Binding<Color>,
+        selectedShape: Binding<String>,
+        selectedEyeColor: Binding<Color>
+    ) {
+        self._selectedBackgroundColor = selectedBackgroundColor
+        self._selectedShape = selectedShape
+        self._selectedEyeColor = selectedEyeColor
+    }
+
+    public var body: some View {
+        // Your form content here, similar to AvatarView
+        Form {
+            Section(header: Text("Background Color")) {
+                Picker("Background Color", selection: $selectedBackgroundColor) {
+                    ForEach(backgroundColors, id: \.self) { colorstring in
+                        if let color = Color(colorString: colorstring) {
+                            Text(colorstring)
+                                .tag(color)
+                        }
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+
+            Section(header: Text("Shape")) {
+                Picker("Shape", selection: $selectedShape) {
+                    ForEach(shapes, id: \.self) { shape in
+                        Text(shape.capitalized).tag(shape)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+
+            Section(header: Text("Eye Color")) {
+                Picker("Eye Color", selection: $selectedEyeColor) {
+                    ForEach(eyeColors, id: \.self) { colorstring in
+                        if let color = Color(colorString: colorstring) {
+                            Text(colorstring)
+                                .tag(color)
+                        }
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+            
+            AvatarView(selectedBackgroundColor: $selectedBackgroundColor, selectedShape: $selectedShape, selectedEyeColor: $selectedEyeColor)
         }
     }
 }
@@ -192,9 +309,9 @@ struct ContentView_Previews: PreviewProvider {
 
             AvatarGeneratorView(
                 delegate: AvatarGeneratorDelegateImpl(),
-                selectedBackgroundColor: .constant(UIColor.red),
+                selectedBackgroundColor: .constant(Color.red),
                 selectedShape: .constant("circle"),
-                selectedEyeColor: .constant(UIColor.black)
+                selectedEyeColor: .constant(Color.black)
             )
             .frame(width: 200, height: 200)
             .padding(10)
@@ -205,9 +322,9 @@ struct ContentView_Previews: PreviewProvider {
 
             AvatarGeneratorView(
                 delegate: AvatarGeneratorDelegateImpl(),
-                selectedBackgroundColor: .constant(UIColor.red),
+                selectedBackgroundColor: .constant(Color.red),
                 selectedShape: .constant("circle"),
-                selectedEyeColor: .constant(UIColor.black)
+                selectedEyeColor: .constant(Color.black)
             )
             .frame(width: 200, height: 200)
             .padding(10)
