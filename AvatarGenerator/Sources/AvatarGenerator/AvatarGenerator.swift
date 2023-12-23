@@ -42,11 +42,6 @@ public final class AvatarUIView: UIView {
 
         delegate?.didGenerateAvatarImage(avatarImage)
 
-        print("Avatar generated successfully")
-        print("AvatarUIView bounds: \(bounds)")
-        print("avatarImageView frame: \(avatarImageView.frame)")
-
-//        return UIImage(systemName: "circle.fill")!
         return avatarImage
     }
 
@@ -208,11 +203,21 @@ struct ContentView: View {
             }
             .padding()
             .sheet(isPresented: $isFormShowing, content: {
-                SelectionFormView(
-                    selectedBackgroundColor: $selectedBackgroundColor,
-                    selectedShape: $selectedShape,
-                    selectedEyeColor: $selectedEyeColor
-                )
+                VStack {
+                    // 1. Drag Indicator
+                    Capsule()
+                        .fill(Color.secondary)
+                        .opacity(0.6)
+                        .frame(width: 40, height: 5)
+                        .padding(20)
+                    
+                    // 2. Selection Form
+                    SelectionFormView(
+                        selectedBackgroundColor: $selectedBackgroundColor,
+                        selectedShape: $selectedShape,
+                        selectedEyeColor: $selectedEyeColor
+                    )
+                } //: VSTACK
             })
         }
         .padding()
