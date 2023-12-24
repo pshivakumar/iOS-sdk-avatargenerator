@@ -25,9 +25,9 @@ public final class AvatarUIView: UIView {
         addSubview(avatarImageView)
     }
 
-    private func generateAvatar(backgroundColor: Color, shape: String, eyeColor: Color) -> UIImage {
+    private func generateAvatar(backgroundColor: Color, shape: String, eyeColor: Color, mouthShape: String) -> UIImage {
         // Create a SwiftUI view representing the avatar
-        let avatarView = AvatarView(selectedBackgroundColor: .constant(backgroundColor), selectedShape: .constant(shape), selectedEyeColor: .constant(eyeColor))
+        let avatarView = AvatarView(selectedBackgroundColor: .constant(backgroundColor), selectedEyeShape: .constant(shape), selectedShapeColor: .constant(eyeColor), selectedMouthShape: .constant(mouthShape))
 
         let controller = UIHostingController(rootView: avatarView)
         let view = controller.view
@@ -46,13 +46,14 @@ public final class AvatarUIView: UIView {
     }
 
 
-    func updateAvatar(backgroundColor: Color, shape: String, eyeColor: Color) {
+    func updateAvatar(backgroundColor: Color, shape: String, eyeColor: Color, mouthShape: String) {
         print("Updating Avatar with backgroundColor: \(backgroundColor), shape: \(shape), eyeColor: \(eyeColor)")
 
         let avatarImage = generateAvatar(
             backgroundColor: backgroundColor,
             shape: shape,
-            eyeColor: eyeColor
+            eyeColor: eyeColor,
+            mouthShape: mouthShape
         )
 
         // Assign the generated image to the image view
@@ -66,71 +67,27 @@ public final class AvatarUIView: UIView {
     }
 }
 
-public struct AvatarView: View {
-
-      
-    @Binding var selectedBackgroundColor: Color
-    @Binding var selectedShape: String
-    @Binding var selectedEyeColor: Color
-
-    public init(selectedBackgroundColor: Binding<Color>, selectedShape: Binding<String>, selectedEyeColor: Binding<Color>) {
-        self._selectedBackgroundColor = selectedBackgroundColor
-        self._selectedShape = selectedShape
-        self._selectedEyeColor = selectedEyeColor
-    }
-
-      public var body: some View {
-          VStack {
-              generateAvatar()
-                  .frame(width: 150, height: 150)
-          }
-          .padding()
-      }
-
-      private func generateAvatar() -> some View {
-          return ZStack {
-              Circle()
-                  .fill(selectedBackgroundColor)
-                  .frame(width: 150, height: 150)
-
-              Image(systemName: selectedShape)
-                  .foregroundColor(selectedEyeColor)
-                  .font(.system(size: 25))
-                  .offset(x: -35, y: -15) // Offset for the left eye
-
-              Image(systemName: selectedShape)
-                  .foregroundColor(selectedEyeColor)
-                  .font(.system(size: 25))
-                  .offset(x: 35, y: -15) // Offset for the right eye
-              
-              Image(systemName: selectedShape)
-                  .foregroundColor(selectedEyeColor)
-                  .font(.system(size: 25))
-                  .offset(x: 0, y: +30) // Offset for the right eye
-          }
-          .padding()
-      }
-}
-
-
 public struct AvatarGeneratorView: UIViewRepresentable {
     public weak var delegate: AvatarGeneratorDelegate?
 
     @Binding public var selectedBackgroundColor: Color
-    @Binding public var selectedShape: String
-    @Binding public var selectedEyeColor: Color
+    @Binding public var selectedEyeShape: String
+    @Binding public var selectedShapeColor: Color
+    @Binding public var selectedMouthShape: String
     
     // Make the initializer public
     public init(
         delegate: AvatarGeneratorDelegate?,
         selectedBackgroundColor: Binding<Color>,
-        selectedShape: Binding<String>,
-        selectedEyeColor: Binding<Color>
+        selectedEyeShape: Binding<String>,
+        selectedShapeColor: Binding<Color>,
+        selectedMouthShape: Binding<String>
     ) {
         self.delegate = delegate
         self._selectedBackgroundColor = selectedBackgroundColor
-        self._selectedShape = selectedShape
-        self._selectedEyeColor = selectedEyeColor
+        self._selectedEyeShape = selectedEyeShape
+        self._selectedShapeColor = selectedShapeColor
+        self._selectedMouthShape = selectedMouthShape
     }
 
     public func makeUIView(context: Context) -> AvatarUIView {
@@ -138,8 +95,9 @@ public struct AvatarGeneratorView: UIViewRepresentable {
         avatarView.delegate = context.coordinator
         avatarView.updateAvatar(
             backgroundColor: selectedBackgroundColor,
-            shape: selectedShape,
-            eyeColor: selectedEyeColor
+            shape: selectedEyeShape,
+            eyeColor: selectedShapeColor, 
+            mouthShape: selectedMouthShape
         )
         return avatarView
     }
@@ -147,8 +105,9 @@ public struct AvatarGeneratorView: UIViewRepresentable {
     public func updateUIView(_ uiView: AvatarUIView, context: Context) {
         uiView.updateAvatar(
             backgroundColor: selectedBackgroundColor,
-            shape: selectedShape,
-            eyeColor: selectedEyeColor
+            shape: selectedEyeShape,
+            eyeColor: selectedShapeColor,
+            mouthShape: selectedMouthShape
         )
     }
 
@@ -182,8 +141,9 @@ public class AvatarGeneratorDelegateImpl: AvatarGeneratorDelegate, ObservableObj
 struct ContentView: View {
     @StateObject private var avatarDelegate = AvatarGeneratorDelegateImpl()
     @State private var selectedBackgroundColor = Color.red
-    @State private var selectedShape = "circle"
-    @State private var selectedEyeColor = Color.black
+    @State private var selectedEyeShape = "circle"
+    @State private var selectedShapeColor = Color.black
+    @State private var selectedMouthShape = "infinity"
     @State private var isFormShowing = false
 
     var body: some View {
@@ -192,8 +152,9 @@ struct ContentView: View {
                 AvatarGeneratorView(
                     delegate: avatarDelegate,
                     selectedBackgroundColor: $selectedBackgroundColor,
-                    selectedShape: $selectedShape,
-                    selectedEyeColor: $selectedEyeColor
+                    selectedEyeShape: $selectedEyeShape,
+                    selectedShapeColor: $selectedShapeColor,
+                    selectedMouthShape: $selectedMouthShape
                 )
                 .navigationTitle("Avatar Generator")
             } //: NAVIGATIONVIEW
@@ -214,73 +175,14 @@ struct ContentView: View {
                     // 2. Selection Form
                     SelectionFormView(
                         selectedBackgroundColor: $selectedBackgroundColor,
-                        selectedShape: $selectedShape,
-                        selectedEyeColor: $selectedEyeColor
+                        selectedEyeShape: $selectedEyeShape,
+                        selectedMouthShape: $selectedMouthShape,
+                        selectedShapeColor: $selectedShapeColor
                     )
                 } //: VSTACK
             })
         }
         .padding()
-    }
-}
-
-public struct SelectionFormView: View {
-    let backgroundColors = ["Red", "Green", "Blue", "Purple", "Orange"]
-    let shapes = ["circle", "triangle", "square"]
-    let eyeColors = ["Black", "Blue", "Green", "Gray"]
-    
-    @Binding public var selectedBackgroundColor: Color
-    @Binding public var selectedShape: String
-    @Binding public var selectedEyeColor: Color
-    
-    public init(
-        selectedBackgroundColor: Binding<Color>,
-        selectedShape: Binding<String>,
-        selectedEyeColor: Binding<Color>
-    ) {
-        self._selectedBackgroundColor = selectedBackgroundColor
-        self._selectedShape = selectedShape
-        self._selectedEyeColor = selectedEyeColor
-    }
-
-    public var body: some View {
-        // Your form content here, similar to AvatarView
-        Form {
-            Section(header: Text("Background Color")) {
-                Picker("Background Color", selection: $selectedBackgroundColor) {
-                    ForEach(backgroundColors, id: \.self) { colorstring in
-                        if let color = Color(colorString: colorstring) {
-                            Text(colorstring)
-                                .tag(color)
-                        }
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-            }
-
-            Section(header: Text("Shape")) {
-                Picker("Shape", selection: $selectedShape) {
-                    ForEach(shapes, id: \.self) { shape in
-                        Text(shape.capitalized).tag(shape)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-            }
-
-            Section(header: Text("Eye Color")) {
-                Picker("Eye Color", selection: $selectedEyeColor) {
-                    ForEach(eyeColors, id: \.self) { colorstring in
-                        if let color = Color(colorString: colorstring) {
-                            Text(colorstring)
-                                .tag(color)
-                        }
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-            }
-            
-            AvatarView(selectedBackgroundColor: $selectedBackgroundColor, selectedShape: $selectedShape, selectedEyeColor: $selectedEyeColor)
-        }
     }
 }
 
@@ -297,8 +199,9 @@ struct ContentView_Previews: PreviewProvider {
             AvatarGeneratorView(
                 delegate: AvatarGeneratorDelegateImpl(),
                 selectedBackgroundColor: .constant(Color.red),
-                selectedShape: .constant("circle"),
-                selectedEyeColor: .constant(Color.black)
+                selectedEyeShape: .constant("circle"),
+                selectedShapeColor: .constant(Color.black),
+                selectedMouthShape: .constant("infinity")
             )
             .frame(width: 200, height: 200)
             .padding(10)
@@ -310,8 +213,9 @@ struct ContentView_Previews: PreviewProvider {
             AvatarGeneratorView(
                 delegate: AvatarGeneratorDelegateImpl(),
                 selectedBackgroundColor: .constant(Color.red),
-                selectedShape: .constant("circle"),
-                selectedEyeColor: .constant(Color.black)
+                selectedEyeShape: .constant("circle"),
+                selectedShapeColor: .constant(Color.black),
+                selectedMouthShape: .constant("infinity")
             )
             .frame(width: 200, height: 200)
             .padding(10)
