@@ -167,14 +167,8 @@ struct ContentView: View {
             .padding()
             .sheet(isPresented: $isFormShowing, content: {
                 VStack {
-                    // 1. Drag Indicator
-                    Capsule()
-                        .fill(Color.secondary)
-                        .opacity(0.6)
-                        .frame(width: 40, height: 5)
-                        .padding(20)
-                    
-                    // 2. Selection Form
+
+                    // 1. Selection Form
                     SelectionFormView(
                         selectedBackgroundColor: $selectedBackgroundColor,
                         selectedEyeShape: $selectedEyeShape,
