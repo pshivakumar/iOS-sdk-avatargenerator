@@ -21,7 +21,7 @@ public final class AvatarUIView: UIView {
 
     private func setupUI() {
         avatarImageView = UIImageView()
-        avatarImageView.backgroundColor = .gray // Set a background color for visibility
+        avatarImageView.backgroundColor = .clear // Set a  different, if required, background color for visibility
         addSubview(avatarImageView)
     }
 
@@ -31,7 +31,9 @@ public final class AvatarUIView: UIView {
 
         let controller = UIHostingController(rootView: avatarView)
         let view = controller.view
-        let targetSize = controller.view.intrinsicContentSize
+        
+        let targetSize = CGSize(width: 250, height: 250) // Set your desired size
+        
         view?.bounds = CGRect(origin: .zero, size: targetSize)
         view?.backgroundColor = .clear
 
@@ -159,7 +161,7 @@ struct ContentView: View {
                 .navigationTitle("Avatar Generator")
             } //: NAVIGATIONVIEW
             
-            Button("Show Selection From") {
+            Button("Show Selection Form") {
                 isFormShowing.toggle()
             }
             .padding()

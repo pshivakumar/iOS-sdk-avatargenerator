@@ -18,17 +18,19 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Text("Avatar Image ")
+            Text("Avatar Image")
                 .font(.title)
                 .fontWeight(.bold)
             
             AvatarGeneratorView(delegate: avatarDelegate, selectedBackgroundColor: $selectedBackgroundColor, selectedEyeShape: $selectedEyeShape, selectedShapeColor: $selectedShapeColor, selectedMouthShape: $selectedMouthShape)
-                .frame(width: 300, height: 300)
+                .frame(width: 250, height: 250)
             
-            Button("Show Options") {
+            Button("Make my Avatar") {
                 isShowingForm.toggle()
             }
             .padding()
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
             .sheet(isPresented: $isShowingForm, content: {
                 SelectionFormView(selectedBackgroundColor: $selectedBackgroundColor, selectedEyeShape: $selectedEyeShape, selectedMouthShape: $selectedMouthShape, selectedShapeColor: $selectedShapeColor)
             })
