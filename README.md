@@ -4,7 +4,7 @@ The AvatarGenerator SDK for iOS is a versatile library that allows developers to
 
 ## Features
 
-- **Customization:** Choose from a variety of options, including hair color, eye color, skin color, and more.
+- **Customization:** Choose from a variety of options, including eye shape,nose shape, skin color, and more.
 - **Easy Integration:** Quickly integrate avatar generation into your app with minimal code.
 - **UIKit and SwiftUI Support:** Compatible with both UIKit and SwiftUI, providing flexibility for different app architectures.
 
@@ -18,14 +18,6 @@ You can use Swift Package Manager to integrate AvatarGenerator into your Xcode p
         1. In your Xcode project, go to File -> Swift Packages -> Add Package Dependency
         2. Enter the following URL: https://github.com/pshivakumar/iOS-sdk-avatargenerator.git
         3. Follow the prompts to complete the integration.
-
-### CocoaPods
-
-You can also use CocoaPods for installation:
-
-```bash
-    pod 'AvatarGenerator', '~> 1.0'
-```
 
 ### Usage
 
@@ -55,7 +47,7 @@ view.addSubview(avatarView)
 
 // For SwiftUI
 var body: some View {
-    AvatarGeneratorView()
+        AvatarGeneratorView(delegate: , selectedBackgroundColor: , selectedEyeShape: , selectedShapeColor: , selectedMouthShape: )
         .frame(width: 200, height: 200)
 }
 ```
