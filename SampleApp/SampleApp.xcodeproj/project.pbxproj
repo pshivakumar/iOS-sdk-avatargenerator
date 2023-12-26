@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA0241C22B3ABDC700E43945 /* AvatarGenerator in Frameworks */ = {isa = PBXBuildFile; productRef = FA0241C12B3ABDC700E43945 /* AvatarGenerator */; };
 		FA2C77602B345C59001086C0 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2C775F2B345C59001086C0 /* SampleApp.swift */; };
 		FA2C77622B345C59001086C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2C77612B345C59001086C0 /* ContentView.swift */; };
 		FA2C77642B345C5B001086C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA2C77632B345C5B001086C0 /* Assets.xcassets */; };
 		FA2C77672B345C5B001086C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA2C77662B345C5B001086C0 /* Preview Assets.xcassets */; };
-		FA2C77702B345E32001086C0 /* AvatarGenerator in Frameworks */ = {isa = PBXBuildFile; productRef = FA2C776F2B345E32001086C0 /* AvatarGenerator */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA2C77702B345E32001086C0 /* AvatarGenerator in Frameworks */,
+				FA0241C22B3ABDC700E43945 /* AvatarGenerator in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +94,7 @@
 			);
 			name = SampleApp;
 			packageProductDependencies = (
-				FA2C776F2B345E32001086C0 /* AvatarGenerator */,
+				FA0241C12B3ABDC700E43945 /* AvatarGenerator */,
 			);
 			productName = SampleApp;
 			productReference = FA2C775C2B345C59001086C0 /* SampleApp.app */;
@@ -125,7 +125,7 @@
 			);
 			mainGroup = FA2C77532B345C58001086C0;
 			packageReferences = (
-				FA2C776E2B345E32001086C0 /* XCLocalSwiftPackageReference "../AvatarGenerator" */,
+				FA0241C02B3ABDC700E43945 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = FA2C775D2B345C59001086C0 /* Products */;
 			projectDirPath = "";
@@ -213,7 +213,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -270,7 +270,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -362,14 +362,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		FA2C776E2B345E32001086C0 /* XCLocalSwiftPackageReference "../AvatarGenerator" */ = {
+		FA0241C02B3ABDC700E43945 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../AvatarGenerator;
+			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		FA2C776F2B345E32001086C0 /* AvatarGenerator */ = {
+		FA0241C12B3ABDC700E43945 /* AvatarGenerator */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AvatarGenerator;
 		};

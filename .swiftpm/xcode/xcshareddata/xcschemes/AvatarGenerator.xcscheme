@@ -9,14 +9,14 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AvatarGeneratorTests"
-               BuildableName = "AvatarGeneratorTests"
-               BlueprintName = "AvatarGeneratorTests"
+               BlueprintIdentifier = "AvatarGenerator"
+               BuildableName = "AvatarGenerator"
+               BlueprintName = "AvatarGenerator"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -58,6 +58,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "AvatarGenerator"
+            BuildableName = "AvatarGenerator"
+            BlueprintName = "AvatarGenerator"
+            ReferencedContainer = "container:">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
